@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Blog</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    header {
+      background: #6200ea;
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    .blog-post {
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .blog-post h2 {
+      color: #6200ea;
+      margin-top: 0;
+    }
+    .blog-post p {
+      white-space: pre-wrap; /* Preserve line breaks in text files */
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #6200ea;
+      color: white;
+      margin-top: 40px;
+    }
+    footer a {
+      color: white;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>My Blog</h1>
+  </header>
+  <div class="container" id="blog-container">
+    <!-- Blog posts will be dynamically inserted here -->
+  </div>
+  <footer>
+    <p>Made with ❤️ by <a href="https://github.com/your-username" target="_blank">You</a></p>
+  </footer>
+
+  <script>
+    // Replace with your GitHub username and repo name
+    const username = 'your-username';
+    const repo = 'your-repo-name';
+
+    // Fetch the list of text files from the GitHub repo
+    async function fetchBlogPosts() {
+      const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/`;
+      try {
+        const response = await fetch(apiUrl);
+        const files = await response.json();
+
+        // Filter for .txt files
+        const textFiles = files.filter(file => file.name.endsWith('.txt'));
+
+        // Fetch and display each text file
+        for (const file of textFiles) {
+          const fileResponse = await fetch(file.download_url);
+          const text = await fileResponse.text();
+          displayBlogPost(file.name, text);
+        }
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      }
+    }
+
+    // Display a blog post
+    function displayBlogPost(title, content) {
+      const blogContainer = document.getElementById('blog-container');
+      const blogPost = document.createElement('div');
+      blogPost.className = 'blog-post';
+
+      const postTitle = document.createElement('h2');
+      postTitle.textContent = title.replace('.txt', ''); // Remove .txt from title
+
+      const postContent = document.createElement('p');
+      postContent.textContent = content;
+
+      blogPost.appendChild(postTitle);
+      blogPost.appendChild(postContent);
+      blogContainer.appendChild(blogPost);
+    }
+
+    // Load blog posts when the page loads
+    fetchBlogPosts();
+  </script>
+</body>
+</html>
